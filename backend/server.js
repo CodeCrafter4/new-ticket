@@ -8,11 +8,7 @@ const userRoutes = require("./routes/users");
 
 const app = express();
 
-// CORS configuration
-const cors = require('cors');
 
-// Update CORS configuration
-const cors = require('cors');
 
 // Update CORS configuration
 app.use(cors({

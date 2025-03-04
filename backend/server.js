@@ -9,14 +9,23 @@ const userRoutes = require("./routes/users");
 const app = express();
 
 // CORS configuration
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+const cors = require('cors');
+
+// Update CORS configuration
+const cors = require('cors');
+
+// Update CORS configuration
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://tickets-sand.vercel.app',
+    'https://tickets.vercel.app',
+    'https://ticket-two-delta.vercel.app'  // Add your new frontend domain
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Middleware
 app.use(express.json());

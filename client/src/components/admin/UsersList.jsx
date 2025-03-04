@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import { USERS_API_URL } from "../../config/api";
 
 export default function UsersList() {
   const [users, setUsers] = useState([]);
@@ -11,7 +12,7 @@ export default function UsersList() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users", {
+        const response = await axios.get(USERS_API_URL, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

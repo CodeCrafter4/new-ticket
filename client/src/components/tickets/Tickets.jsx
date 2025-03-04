@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import CreateTicketModal from "./CreateTicketModal";
+import TicketDetails from "./TicketDetails";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { fetchTickets } from "../../features/tickets/ticketSlice";
 
@@ -10,10 +11,15 @@ export default function Tickets() {
   const dispatch = useDispatch();
   const { tickets, loading } = useSelector((state) => state.tickets);
   const { user } = useSelector((state) => state.auth);
+  const [selectedTicket, setSelectedTicket] = useState(null);
 
   useEffect(() => {
     dispatch(fetchTickets());
   }, [dispatch]);
+
+  const handleTicketClick = (ticket) => {
+    setSelectedTicket(ticket);
+  };
 
   // Filter tickets to show only the current user's tickets
   const userTickets = tickets.filter(
@@ -71,43 +77,49 @@ export default function Tickets() {
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
           <ul role="list" className="divide-y divide-gray-200">
             {userTickets.map((ticket) => (
-              <li key={ticket._id}>
-                <Link
-                  to={`/tickets/${ticket._id}`}
-                  className="block hover:bg-gray-50"
-                >
-                  <div className="px-4 py-4 sm:px-6">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-indigo-600 truncate">
-                        {ticket.title}
+              <li
+                key={ticket._id}
+                onClick={() => handleTicketClick(ticket)}
+                className="cursor-pointer hover:bg-gray-50 transition-colors duration-150"
+              >
+                <div className="px-4 py-4 sm:px-6">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-indigo-600 truncate">
+                      {ticket.title}
+                    </p>
+                    <div className="ml-2 flex-shrink-0 flex">
+                      <p
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
+                          ticket.status
+                        )}`}
+                      >
+                        {ticket.status.replace("_", " ")}
                       </p>
-                      <div className="ml-2 flex-shrink-0 flex">
-                        <p
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
-                            ticket.status
-                          )}`}
-                        >
-                          {ticket.status.replace("_", " ")}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-2 sm:flex sm:justify-between">
-                      <div className="sm:flex">
-                        <p className="flex items-center text-sm text-gray-500">
-                          Created on{" "}
-                          {new Date(ticket.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                        <p className="truncate">{ticket.description}</p>
-                      </div>
                     </div>
                   </div>
-                </Link>
+                  <div className="mt-2 sm:flex sm:justify-between">
+                    <div className="sm:flex">
+                      <p className="flex items-center text-sm text-gray-500">
+                        Created on{" "}
+                        {new Date(ticket.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                      <p className="truncate">{ticket.description}</p>
+                    </div>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
         </div>
+      )}
+
+      {selectedTicket && (
+        <TicketDetails
+          ticket={selectedTicket}
+          onClose={() => setSelectedTicket(null)}
+        />
       )}
 
       <CreateTicketModal

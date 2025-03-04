@@ -39,7 +39,6 @@ export default function TicketDetails({ ticket, onClose }) {
       ).unwrap();
     } catch (error) {
       console.error("Failed to update ticket status:", error);
-      // You might want to show an error message to the user here
     }
   };
 
@@ -85,7 +84,7 @@ export default function TicketDetails({ ticket, onClose }) {
       case "in_progress":
         return "bg-yellow-100 text-yellow-800";
       case "closed":
-        return "bg-red-100 text-red-800";
+        return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -201,7 +200,7 @@ export default function TicketDetails({ ticket, onClose }) {
                     ticket.status
                   )}`}
                 >
-                  {ticket.status}
+                  {ticket.status.replace("_", " ")}
                 </span>
               )}
             </div>

@@ -8,11 +8,7 @@ const userRoutes = require("./routes/users");
 
 const app = express();
 
-// CORS configuration
-const cors = require('cors');
 
-// Update CORS configuration
-const cors = require('cors');
 
 // Update CORS configuration
 app.use(cors({
@@ -26,7 +22,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
 // Middleware
 app.use(express.json());
 

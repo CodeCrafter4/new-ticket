@@ -70,10 +70,9 @@ export const signup = createAsyncThunk(
 
 const initialState = {
   user: null,
-  token: localStorage.getItem("token"),
-  isAuthenticated: Boolean(localStorage.getItem("token")),
-  isAdmin: false,
-  loading: false,
+  token: null,
+  isAuthenticated: false,
+  loading: true,
   error: null,
 };
 
@@ -86,7 +85,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      state.isAdmin = false;
+      state.loading = false;
     },
     clearError: (state) => {
       state.error = null;
@@ -104,14 +103,13 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.isAdmin = action.payload.user.role === "admin";
+        state.error = null;
       })
       .addCase(checkToken.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
-        state.isAdmin = false;
         state.error = action.payload;
       })
       // Login
@@ -124,7 +122,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.isAdmin = action.payload.user.role === "admin";
+        state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -140,7 +138,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.isAdmin = action.payload.user.role === "admin";
+        state.error = null;
       })
       .addCase(signup.rejected, (state, action) => {
         state.loading = false;

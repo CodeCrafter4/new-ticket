@@ -1,17 +1,16 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { checkToken } from "../../features/auth/authSlice";
 
 export default function AdminRoute({ children }) {
   const dispatch = useDispatch();
-  const { isAuthenticated, isAdmin, loading } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const { isAuthenticated, user, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      dispatch(checkToken());
-    }
-  }, [dispatch, isAuthenticated]);
+    dispatch(checkToken());
+  }, [dispatch]);
 
   if (loading) {
     return (
@@ -22,11 +21,11 @@ export default function AdminRoute({ children }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (!isAdmin) {
-    return <Navigate to="/dashboard" />;
+  if (user?.role !== "admin") {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

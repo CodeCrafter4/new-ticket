@@ -54,7 +54,7 @@ export const updateTicketStatus = createAsyncThunk(
   "tickets/updateStatus",
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/${id}/status`, { status });
+      const response = await api.put(`/${id}/status`, { status });
       return response.data;
     } catch (error) {
       return rejectWithValue(

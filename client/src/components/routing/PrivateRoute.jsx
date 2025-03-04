@@ -1,19 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { checkToken } from "../../features/auth/authSlice";
 
 export default function PrivateRoute({ children }) {
   const dispatch = useDispatch();
-  const { isAuthenticated, loading } = useSelector((state) => state.auth);
-  const [hasChecked, setHasChecked] = useState(false);
+  const location = useLocation();
+  const { isAuthenticated, user, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!isAuthenticated && !hasChecked) {
-      dispatch(checkToken());
-      setHasChecked(true);
-    }
-  }, [dispatch, isAuthenticated, hasChecked]);
+    dispatch(checkToken());
+  }, [dispatch]);
 
   if (loading) {
     return (
@@ -23,5 +20,14 @@ export default function PrivateRoute({ children }) {
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // If user is admin and trying to access user routes, redirect to admin dashboard
+  if (user?.role === "admin" && location.pathname.startsWith("/dashboard")) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return children;
 }

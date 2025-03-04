@@ -23,7 +23,14 @@ export default function AdminDashboard() {
   const handleStatusChange = async (e, ticketId) => {
     e.stopPropagation(); // Prevent opening ticket details
     const newStatus = e.target.value;
-    await dispatch(updateTicketStatus({ id: ticketId, status: newStatus }));
+    try {
+      await dispatch(
+        updateTicketStatus({ id: ticketId, status: newStatus })
+      ).unwrap();
+    } catch (error) {
+      console.error("Failed to update ticket status:", error);
+      // You might want to show an error message to the user here
+    }
   };
 
   if (loading) {
@@ -66,11 +73,11 @@ export default function AdminDashboard() {
                           onClick={(e) => e.stopPropagation()} // Prevent opening ticket details
                         >
                           <option value="open">Open</option>
-                          <option value="in-progress">In Progress</option>
+                          <option value="in_progress">In Progress</option>
                           <option value="closed">Closed</option>
                         </select>
                         <span className="text-sm text-gray-500">
-                          Created by: {ticket.creator?.username}
+                          Created by: {ticket.user?.username}
                         </span>
                       </div>
                     </div>

@@ -33,9 +33,14 @@ export default function TicketDetails({ ticket, onClose }) {
   };
 
   const handleStatusChange = async (e) => {
-    await dispatch(
-      updateTicketStatus({ id: ticket._id, status: e.target.value })
-    );
+    try {
+      await dispatch(
+        updateTicketStatus({ id: ticket._id, status: e.target.value })
+      ).unwrap();
+    } catch (error) {
+      console.error("Failed to update ticket status:", error);
+      // You might want to show an error message to the user here
+    }
   };
 
   const handleAddNote = async (e) => {

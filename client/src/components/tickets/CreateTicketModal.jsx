@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createTicket } from "../../features/tickets/ticketSlice";
 
-export default function CreateTicketModal({ onClose }) {
+export default function CreateTicketModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -19,12 +19,15 @@ export default function CreateTicketModal({ onClose }) {
     e.preventDefault();
     const result = await dispatch(createTicket(formData));
     if (!result.error) {
+      setFormData({ title: "", description: "" });
       onClose();
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
       <div className="relative top-20 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-900">

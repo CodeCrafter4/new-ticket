@@ -12,11 +12,15 @@ const app = express();
 const cors = require('cors');
 
 // Update CORS configuration
+const cors = require('cors');
+
+// Update CORS configuration
 app.use(cors({
   origin: [
     'http://localhost:5173',
     'https://tickets-sand.vercel.app',
-    'https://tickets.vercel.app'
+    'https://tickets.vercel.app',
+    'https://ticket-two-delta.vercel.app'  // Add your new frontend domain
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

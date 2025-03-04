@@ -165,9 +165,7 @@ export default function AdminDashboard() {
               className="rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
               <option value="all">All Status</option>
-              <option value="open">Open</option>
-              <option value="in_progress">In Progress</option>
-              <option value="closed">Closed</option>
+             
             </select>
           </div>
           <div className="flow-root">
@@ -187,7 +185,7 @@ export default function AdminDashboard() {
                         <select
                           value={ticket.status}
                           onChange={(e) => handleStatusChange(e, ticket._id)}
-                          className={`rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 ${getStatusColor(
+                          className={`p-1.5 rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 ${getStatusColor(
                             ticket.status
                           )}`}
                           onClick={(e) => e.stopPropagation()}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { login, clearError } from "../../features/auth/authSlice";
+import { login, clearError, resetLoading } from "../../features/auth/authSlice";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -11,12 +11,22 @@ export default function Login() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading, error, isAuthenticated } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     // Reset loading and error states when component mounts
     dispatch(clearError());
+    dispatch(resetLoading());
   }, [dispatch]);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,9 +34,15 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(login(formData));
-    if (!result.error) {
-      navigate(result.payload.user.role === "admin" ? "/admin" : "/dashboard");
+    try {
+      const result = await dispatch(login(formData)).unwrap();
+      if (result && result.user) {
+        const redirectPath =
+          result.user.role === "admin" ? "/admin" : "/dashboard";
+        navigate(redirectPath);
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
     }
   };
 

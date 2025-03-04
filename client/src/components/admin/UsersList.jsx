@@ -1,34 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { USERS_API_URL } from "../../config/api";
+import { fetchUsers } from "../../features/users/userSlice";
 
 export default function UsersList() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { users, loading, error } = useSelector((state) => state.users);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(USERS_API_URL, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUsers(response.data);
-      } catch (err) {
-        setError(err.response?.data?.error || "Failed to fetch users");
-      } finally {
-        setLoading(false);
-      }
-    };
+    console.log("UsersList mounted, fetching users...");
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
-    fetchUsers();
-  }, [token]);
+  console.log("UsersList render state:", { users, loading, error });
 
   if (loading) {
+    console.log("UsersList: Loading state");
     return (
       <div className="flex items-center justify-center h-full">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -37,6 +23,7 @@ export default function UsersList() {
   }
 
   if (error) {
+    console.error("UsersList: Error state", error);
     return (
       <div className="bg-red-50 border-l-4 border-red-400 p-4">
         <div className="flex">
@@ -62,6 +49,8 @@ export default function UsersList() {
     );
   }
 
+  console.log("UsersList: Rendering users list", users);
+
   return (
     <div className="space-y-6">
       <div className="bg-white shadow rounded-lg p-6">
@@ -75,32 +64,39 @@ export default function UsersList() {
         <div className="px-4 py-5 sm:p-6">
           <div className="flow-root">
             <ul className="-my-5 divide-y divide-gray-200">
-              {users.map((user) => (
-                <li key={user._id} className="py-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {user.username}
-                      </p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
+              {users && users.length > 0 ? (
+                users.map((user) => (
+                  <li key={user._id} className="py-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {user.username}
+                        </p>
+                        <p className="text-sm text-gray-500">{user.email}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            user.role === "admin"
+                              ? "bg-purple-100 text-purple-800"
+                              : "bg-green-100 text-green-800"
+                          }`}
+                        >
+                          {user.role}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          Joined:{" "}
+                          {new Date(user.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          user.role === "admin"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-green-100 text-green-800"
-                        }`}
-                      >
-                        {user.role}
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        Joined: {new Date(user.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
+                  </li>
+                ))
+              ) : (
+                <li className="py-4 text-center text-gray-500">
+                  No users found
                 </li>
-              ))}
+              )}
             </ul>
           </div>
         </div>

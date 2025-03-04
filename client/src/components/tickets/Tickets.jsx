@@ -14,6 +14,7 @@ export default function Tickets() {
   const [selectedTicket, setSelectedTicket] = useState(null);
 
   useEffect(() => {
+    console.log("Tickets component mounted, fetching tickets...");
     dispatch(fetchTickets());
   }, [dispatch]);
 
@@ -23,8 +24,15 @@ export default function Tickets() {
 
   // Filter tickets to show only the current user's tickets
   const userTickets = tickets.filter(
-    (ticket) => ticket.creator?._id === user?.id
+    (ticket) => ticket.user?._id === user?._id
   );
+
+  console.log("Debug info:", {
+    allTickets: tickets,
+    userTickets,
+    currentUser: user,
+    loading,
+  });
 
   const getStatusColor = (status) => {
     switch (status) {

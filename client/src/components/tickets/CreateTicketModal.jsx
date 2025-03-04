@@ -97,7 +97,7 @@ export default function CreateTicketModal({ isOpen, onClose }) {
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      Fill in the details below to create a new support ticket.
+                      Fill in the details below to create a new ticket.
                     </p>
                   </div>
                 </div>
@@ -118,8 +118,8 @@ export default function CreateTicketModal({ isOpen, onClose }) {
                         value={formData.title}
                         onChange={handleChange}
                         required
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        placeholder="Enter a descriptive title"
+                        className="p-2 block w-full h-8 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        placeholder="Enter a title"
                       />
                     </div>
                   </div>
@@ -139,8 +139,8 @@ export default function CreateTicketModal({ isOpen, onClose }) {
                         value={formData.description}
                         onChange={handleChange}
                         required
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        placeholder="Describe your issue in detail..."
+                        className="p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        placeholder="Enter description "
                       />
                     </div>
                   </div>

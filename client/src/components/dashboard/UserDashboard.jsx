@@ -29,7 +29,7 @@ export default function UserDashboard() {
 
   // Filter tickets to show only the current user's tickets
   const userTickets = tickets.filter(
-    (ticket) => ticket.creator?._id === user?.id
+    (ticket) => ticket.user?._id === user?._id
   );
 
   const getStatusColor = (status) => {

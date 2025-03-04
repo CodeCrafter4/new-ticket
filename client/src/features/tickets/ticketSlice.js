@@ -39,9 +39,17 @@ export const fetchTickets = createAsyncThunk(
   "tickets/fetchTickets",
   async (_, { rejectWithValue }) => {
     try {
+      console.log("Fetching tickets from:", TICKETS_API_URL);
+      const token = localStorage.getItem("token");
+      console.log("Current token:", token);
+
       const response = await api.get("/");
+      console.log("Tickets API response:", response.data);
+
       return response.data;
     } catch (error) {
+      console.error("Error fetching tickets:", error);
+      console.error("Error response:", error.response);
       return rejectWithValue(
         error.response?.data?.error || "Failed to fetch tickets"
       );

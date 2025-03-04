@@ -22,12 +22,31 @@ export const checkToken = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("No token found");
+      console.log("Checking token:", token);
+
+      if (!token) {
+        console.log("No token found");
+        return rejectWithValue("No token found");
+      }
+
+      // Set the token in the axios instance
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      console.log(
+        "Set token in axios headers:",
+        api.defaults.headers.common["Authorization"]
+      );
 
       const response = await api.get("/me");
-      return { user: response.data.user, token };
+      console.log("Token check response:", response.data);
+
+      return {
+        user: response.data.user,
+        token: token,
+      };
     } catch (error) {
+      console.error("Token check error:", error);
       localStorage.removeItem("token");
+      delete api.defaults.headers.common["Authorization"];
       return rejectWithValue(error.message || "Session expired");
     }
   }
@@ -37,14 +56,31 @@ export const login = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
+      console.log("Attempting login with:", credentials);
       const response = await api.post("/login", credentials);
+      console.log("Login response:", response.data);
+
       const { token, user } = response.data;
 
       // Save token to localStorage
       localStorage.setItem("token", token);
+      console.log(
+        "Saved token to localStorage:",
+        localStorage.getItem("token")
+      );
+
+      // Set the token in the axios instance
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      console.log(
+        "Set token in axios headers:",
+        api.defaults.headers.common["Authorization"]
+      );
 
       return { user, token };
     } catch (error) {
+      console.error("Login error:", error);
+      localStorage.removeItem("token");
+      delete api.defaults.headers.common["Authorization"];
       return rejectWithValue(error.response?.data?.error || "Login failed");
     }
   }
@@ -69,7 +105,7 @@ export const signup = createAsyncThunk(
 
 const initialState = {
   user: null,
-  token: null,
+  token: localStorage.getItem("token"),
   isAuthenticated: false,
   loading: false,
   error: null,
@@ -81,13 +117,19 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       localStorage.removeItem("token");
+      delete api.defaults.headers.common["Authorization"];
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
       state.loading = false;
+      state.error = null;
     },
     clearError: (state) => {
       state.error = null;
+      state.loading = false;
+    },
+    resetLoading: (state) => {
+      state.loading = false;
     },
   },
   extraReducers: (builder) => {
@@ -146,5 +188,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logout, clearError, resetLoading } = authSlice.actions;
 export default authSlice.reducer;

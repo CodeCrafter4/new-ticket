@@ -9,9 +9,13 @@ export default function PrivateRoute({ children }) {
   const { isAuthenticated, user, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(checkToken());
-  }, [dispatch]);
+    // Only check token if not authenticated
+    if (!isAuthenticated) {
+      dispatch(checkToken());
+    }
+  }, [dispatch, isAuthenticated]);
 
+  // Show loading spinner while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -20,6 +24,7 @@ export default function PrivateRoute({ children }) {
     );
   }
 
+  // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

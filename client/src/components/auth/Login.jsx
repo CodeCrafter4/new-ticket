@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { login, clearError, resetLoading } from "../../features/auth/authSlice";
+import { fetchTickets } from "../../features/tickets/ticketSlice";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ export default function Login() {
   const { loading, error, isAuthenticated } = useSelector(
     (state) => state.auth
   );
+  const { tickets } = useSelector((state) => state.tickets);
 
   useEffect(() => {
     // Reset loading and error states when component mounts
@@ -35,11 +37,22 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // First login
       const result = await dispatch(login(formData)).unwrap();
+
       if (result && result.user) {
+        // Then fetch tickets
+        await dispatch(fetchTickets()).unwrap();
+
+        // Navigate after both operations are complete
         const redirectPath =
           result.user.role === "admin" ? "/admin" : "/dashboard";
-        navigate(redirectPath);
+        navigate(redirectPath, { replace: true });
+
+        // Add a small delay and reload to ensure tickets are displayed
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       }
     } catch (error) {
       console.error("Login failed:", error);

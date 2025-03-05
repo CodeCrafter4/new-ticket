@@ -14,14 +14,32 @@ import {
 
 export default function UserDashboard() {
   const dispatch = useDispatch();
-  const { tickets, loading } = useSelector((state) => state.tickets);
-  const { user } = useSelector((state) => state.auth);
+  const { tickets, loading, error } = useSelector((state) => state.tickets);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchTickets());
-  }, [dispatch]);
+    const loadTickets = async () => {
+      if (isAuthenticated && user) {
+        try {
+          await dispatch(fetchTickets()).unwrap();
+        } catch (error) {
+          console.error("Failed to fetch tickets:", error);
+        } finally {
+          setIsInitialLoad(false);
+        }
+      }
+    };
+
+    // Only fetch if we don't have tickets yet
+    if (tickets.length === 0) {
+      loadTickets();
+    } else {
+      setIsInitialLoad(false);
+    }
+  }, [dispatch, isAuthenticated, user, tickets.length]);
 
   const handleTicketClick = (ticket) => {
     setSelectedTicket(ticket);
@@ -49,10 +67,18 @@ export default function UserDashboard() {
     return userTickets.filter((ticket) => ticket.status === status).length;
   };
 
-  if (loading) {
+  if (loading || isInitialLoad) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-red-600">Error: {error}</div>
       </div>
     );
   }

@@ -1,8 +1,8 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useCallback } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
-import { createTicket } from "../../features/tickets/ticketSlice";
+import { createTicket, fetchTickets } from "../../features/tickets/ticketSlice";
 
 export default function CreateTicketModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -12,24 +12,39 @@ export default function CreateTicketModal({ isOpen, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.tickets);
+  const { user } = useSelector((state) => state.auth);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = useCallback((e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await dispatch(createTicket(formData)).unwrap();
-      setFormData({ title: "", description: "" });
-      onClose();
-    } catch (error) {
-      console.error("Failed to create ticket:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+      try {
+        // Create the ticket
+        await dispatch(createTicket(formData)).unwrap();
+
+        // Fetch updated tickets list
+        await dispatch(fetchTickets()).unwrap();
+
+        // Reset form and close modal
+        setFormData({ title: "", description: "" });
+        onClose();
+
+        // Add a small delay and reload to ensure tickets are displayed
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      } catch (error) {
+        console.error("Failed to create ticket:", error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [dispatch, formData, onClose]
+  );
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>

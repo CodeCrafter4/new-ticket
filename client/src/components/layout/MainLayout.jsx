@@ -12,6 +12,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/auth/authSlice";
+import Footer from "./Footer";
 
 // Logo Component
 const Logo = () => (
@@ -285,6 +286,7 @@ export default function MainLayout({ children }) {
         <main className="py-10">
           <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
+        <Footer />
       </div>
     </div>
   );

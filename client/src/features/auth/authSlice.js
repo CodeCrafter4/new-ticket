@@ -22,7 +22,6 @@ export const checkToken = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      console.log("Checking token:", token);
 
       if (!token) {
         console.log("No token found");
@@ -31,13 +30,8 @@ export const checkToken = createAsyncThunk(
 
       // Set the token in the axios instance
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      console.log(
-        "Set token in axios headers:",
-        api.defaults.headers.common["Authorization"]
-      );
-
+   
       const response = await api.get("/me");
-      console.log("Token check response:", response.data);
 
       return {
         user: response.data.user,
@@ -56,25 +50,19 @@ export const login = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      console.log("Attempting login with:", credentials);
+      
       const response = await api.post("/login", credentials);
-      console.log("Login response:", response.data);
+      
 
       const { token, user } = response.data;
 
       // Save token to localStorage
       localStorage.setItem("token", token);
-      console.log(
-        "Saved token to localStorage:",
-        localStorage.getItem("token")
-      );
+     
 
       // Set the token in the axios instance
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      console.log(
-        "Set token in axios headers:",
-        api.defaults.headers.common["Authorization"]
-      );
+      
 
       return { user, token };
     } catch (error) {
